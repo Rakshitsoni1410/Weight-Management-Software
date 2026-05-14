@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 
-import { FaWeightHanging, FaTrash } from "react-icons/fa";
-
+import { FaWeightHanging, FaTrash, FaMoon, FaSun } from "react-icons/fa";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -25,201 +24,200 @@ function App() {
   const [selectedKarat, setSelectedKarat] = useState("ALL");
   const [loading, setLoading] = useState(false);
 
-  // FETCH RECORDS
+  const [darkMode, setDarkMode] = useState(true);
+
+  useEffect(() => {
+    const saved = localStorage.getItem("theme");
+    if (saved) setDarkMode(saved === "dark");
+  }, []);
+
+  const toggleTheme = () => {
+    const newMode = !darkMode;
+    setDarkMode(newMode);
+    localStorage.setItem("theme", newMode ? "dark" : "light");
+  };
+
+  const calculateDifference = (a, b) =>
+    parseFloat(a || 0) - parseFloat(b || 0) || 0;
+
   const fetchRecords = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(API);
-      setRecords(response.data);
-    } catch (error) {
+      const res = await axios.get(API);
+      setRecords(res.data || []);
+    } catch {
       toast.error("Failed to load records");
     } finally {
       setLoading(false);
     }
   };
 
-  // FILTER RECORDS
-  useEffect(() => {
-    if (selectedKarat === "ALL") {
-      setFilteredRecords(records);
-    } else {
-      const filtered = records.filter(
-        (record) => record.karatType === selectedKarat,
-      );
-      setFilteredRecords(filtered);
-    }
-  }, [records, selectedKarat]);
-
   useEffect(() => {
     fetchRecords();
   }, []);
 
-  // ✅ 1. CALCULATION (ADDED)
-  const calculateDifference = (input, output) => {
-    return (parseFloat(input) || 0) - (parseFloat(output) || 0);
-  };
+  useEffect(() => {
+    if (selectedKarat === "ALL") {
+      setFilteredRecords(records || []);
+    } else {
+      setFilteredRecords(
+        (records || []).filter((r) => r.karatType === selectedKarat),
+      );
+    }
+  }, [records, selectedKarat]);
 
-  // ✅ 2. TOTALS (ADDED)
-  const totalInput = filteredRecords.reduce(
-    (sum, r) => sum + (parseFloat(r.inputWeight) || 0),
+  const totalInput = (filteredRecords || []).reduce(
+    (s, r) => s + parseFloat(r.inputWeight || 0),
     0,
   );
 
-  const totalOutput = filteredRecords.reduce(
-    (sum, r) => sum + (parseFloat(r.outputWeight) || 0),
+  const totalOutput = (filteredRecords || []).reduce(
+    (s, r) => s + parseFloat(r.outputWeight || 0),
     0,
   );
 
-  const totalDifference = totalInput - totalOutput;
+  const totalLoss = totalInput - totalOutput;
 
-  // ADD RECORD
   const addRecord = async () => {
     if (!date || !inputWeight || !outputWeight) {
-      toast.warning("Please fill all fields");
+      toast.warning("Fill all fields");
       return;
     }
 
     try {
-      const newRecord = {
+      await axios.post(API, {
         date,
         karatType,
         inputWeight,
         outputWeight,
-      };
+      });
 
-      await axios.post(API, newRecord);
-
-      toast.success("Record added successfully");
+      toast.success("Record added");
 
       setDate("");
       setInputWeight("");
       setOutputWeight("");
 
       fetchRecords();
-    } catch (error) {
-      toast.error("Failed to add record");
+    } catch {
+      toast.error("Error adding record");
     }
   };
 
-  // DELETE RECORD
   const deleteRecord = async (id) => {
-    const confirmDelete = window.confirm("Are you sure you want to delete?");
+    if (!window.confirm("Delete record?")) return;
 
-    if (!confirmDelete) return;
-
-    try {
-      await axios.delete(`${API}/${id}`);
-      toast.success("Record deleted successfully");
-      fetchRecords();
-    } catch (error) {
-      toast.error("Delete failed");
-    }
+    await axios.delete(`${API}/${id}`);
+    toast.success("Deleted");
+    fetchRecords();
   };
 
-  // EXPORT PDF (UPDATED)
   const exportPDF = () => {
     const doc = new jsPDF();
 
-    doc.addImage(logo, "PNG", 14, 10, 30, 30);
+    doc.addImage(logo, "PNG", 12, 10, 22, 22);
+    doc.text("Gold Report", 45, 20);
 
-    doc.setFontSize(20);
-    doc.text("Gold Karat Management Report", 50, 20);
-
-    doc.setFontSize(11);
-    doc.text(`Generated: ${new Date().toLocaleString()}`, 50, 30);
-
-    // ✅ UPDATED TABLE WITH LESS WEIGHT + TOTALS
     autoTable(doc, {
-      startY: 50,
-
-      head: [["Date", "Karat", "Input Weight", "Output Weight", "Less Weight"]],
-
-      body: filteredRecords.map((record) => [
-        record.date,
-        record.karatType,
-        record.inputWeight,
-        record.outputWeight,
-        calculateDifference(record.inputWeight, record.outputWeight).toFixed(3),
+      startY: 40,
+      head: [["Date", "Karat", "Input", "Output", "Loss"]],
+      body: (filteredRecords || []).map((r) => [
+        r.date,
+        r.karatType,
+        r.inputWeight,
+        r.outputWeight,
+        calculateDifference(r.inputWeight, r.outputWeight).toFixed(3),
       ]),
-
-      foot: [
-        [
-          "TOTAL",
-          "",
-          totalInput.toFixed(3),
-          totalOutput.toFixed(3),
-          totalDifference.toFixed(3),
-        ],
-      ],
     });
 
-    doc.save("gold-records.pdf");
-    toast.success("PDF Exported Successfully");
+    doc.save("report.pdf");
   };
 
+  // 🎨 FIXED THEME SYSTEM
+  const bg = darkMode ? "bg-[#0b1220] text-white" : "bg-gray-100 text-black";
+
+  const card = darkMode
+    ? "bg-[#111c33] border-gray-800"
+    : "bg-white border-gray-200";
+
+  // ⭐ FIXED INPUT (IMPORTANT CHANGE HERE)
+  const inputStyle =
+    "w-full p-3 rounded-lg border focus:outline-none " +
+    (darkMode
+      ? "bg-[#0b1220] border-gray-700 text-white placeholder-gray-400"
+      : "bg-white border-gray-300 text-black placeholder-gray-500");
+
   return (
-    <div className="flex">
+    <div className={`flex min-h-screen transition-all ${bg}`}>
       <ToastContainer />
 
       {/* SIDEBAR */}
-      <div className="w-64 bg-yellow-700 text-white min-h-screen p-5 hidden md:block">
-        <div className="flex items-center gap-3 mb-10">
-          <FaWeightHanging size={28} />
-          <h1 className="text-2xl font-bold">Gold Manager</h1>
-        </div>
-
-        <div className="space-y-4">
-          <div className="bg-yellow-800 p-3 rounded-lg">Dashboard</div>
-
-          <div className="hover:bg-yellow-800 p-3 rounded-lg transition">
-            Gold Records
+      <div
+        className={`w-64 hidden md:block p-6 border-r ${
+          darkMode ? "bg-[#0f172a] border-gray-800" : "bg-white"
+        }`}
+      >
+        {/* BRAND SECTION */}
+        <div className="mb-8">
+          <div className="flex items-center gap-2 mb-2">
+            <FaWeightHanging className="text-[#d4af37]" />
+            <h1 className="font-bold text-lg">Gold Manager</h1>
           </div>
 
-          <div className="hover:bg-yellow-800 p-3 rounded-lg transition">
+          <p className="text-xs opacity-60"> Business Dashboard</p>
+        </div>
+        {/* MENU */}
+        <div className="space-y-2 text-sm">
+          <div className="bg-[#111c33] text-[#d4af37] p-3 rounded-lg border border-gray-800">
+            Dashboard
+          </div>
+
+          <div className="p-3 hover:bg-[#111c33] rounded-lg cursor-pointer transition">
+            Records
+          </div>
+
+          <div className="p-3 hover:bg-[#111c33] rounded-lg cursor-pointer transition">
             Reports
           </div>
         </div>
       </div>
-
-      {/* MAIN CONTENT */}
-      <div className="flex-1 bg-gray-100 min-h-screen p-6">
+      {/* MAIN */}
+      <div className="flex-1 p-6 space-y-6">
         {/* HEADER */}
-        <div className="bg-white p-5 rounded-xl shadow-md flex justify-between items-center">
+        <div className={`${card} border rounded-2xl p-6 flex justify-between`}>
           <div>
-            <h2 className="text-3xl font-bold text-gray-700">
-              Gold Karat Management
-            </h2>
-
-            <p className="text-gray-500 mt-1">
-              Manage 75 / 84 / 92 Karat Gold Records
-            </p>
+            <h1 className="text-2xl font-bold text-[#d4af37]">
+              Machinecut Hisab Management System 
+            </h1>
+            <p className="opacity-70"> Dashboard</p>
           </div>
 
-          <div className="bg-yellow-600 text-white px-5 py-2 rounded-lg font-semibold">
-            Offline Business Software
-          </div>
+          <button
+            onClick={toggleTheme}
+            className="bg-[#d4af37] text-black px-4 py-2 rounded-xl font-semibold"
+          >
+            {darkMode ? "Light ☀️" : "Dark 🌙"}
+          </button>
         </div>
 
         {/* FORM */}
-        <div className="bg-white p-6 rounded-xl shadow-md mt-6">
-          <h2 className="text-2xl font-bold mb-5">Add Gold Record</h2>
-
+        <div className={`${card} border rounded-2xl p-6`}>
           <div className="grid md:grid-cols-4 gap-4">
             <input
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              className="border p-3 rounded-lg"
+              className={inputStyle}
             />
 
             <select
               value={karatType}
               onChange={(e) => setKaratType(e.target.value)}
-              className="border p-3 rounded-lg"
+              className={inputStyle}
             >
-              <option value="75">75 Karat</option>
-              <option value="84">84 Karat</option>
-              <option value="92">92 Karat</option>
+              <option value="75">75</option>
+              <option value="84">84</option>
+              <option value="92">92</option>
             </select>
 
             <input
@@ -227,7 +225,7 @@ function App() {
               placeholder="Input Weight"
               value={inputWeight}
               onChange={(e) => setInputWeight(e.target.value)}
-              className="border p-3 rounded-lg"
+              className={inputStyle}
             />
 
             <input
@@ -235,90 +233,96 @@ function App() {
               placeholder="Output Weight"
               value={outputWeight}
               onChange={(e) => setOutputWeight(e.target.value)}
-              className="border p-3 rounded-lg"
+              className={inputStyle}
             />
           </div>
 
           <button
             onClick={addRecord}
-            className="bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg mt-5"
+            className="mt-5 bg-[#d4af37] text-black px-6 py-3 rounded-xl font-semibold"
           >
             Save Record
           </button>
         </div>
 
         {/* FILTER */}
-        <div className="bg-white p-4 rounded-xl shadow-md mt-6 flex flex-wrap gap-4 items-center">
-          <h3 className="font-bold text-lg">Filter By Karat:</h3>
+        <div className={`${card} border rounded-2xl p-4 flex gap-4`}>
+          <span>Filter:</span>
 
           <select
             value={selectedKarat}
             onChange={(e) => setSelectedKarat(e.target.value)}
-            className="border p-3 rounded-lg"
+            className={inputStyle}
           >
-            <option value="ALL">All</option>
-            <option value="75">75 Karat</option>
-            <option value="84">84 Karat</option>
-            <option value="92">92 Karat</option>
+            <option value="ALL">ALL</option>
+            <option value="75">75</option>
+            <option value="84">84</option>
+            <option value="92">92</option>
           </select>
         </div>
 
-        {/* TABLE */}
-        <div className="bg-white p-6 rounded-xl shadow-md mt-6">
-          <div className="flex justify-between items-center mb-5">
-            <h2 className="text-2xl font-bold">Gold Records</h2>
+        {/* TABLE SECTION */}
+        <div className={`${card} border rounded-2xl p-6`}>
+          {/* HEADER (FIXED ALIGNMENT) */}
+          <div className="flex justify-between items-center mb-4">
+            <div>
+              <h2 className="text-lg font-semibold text-[#d4af37]">Records</h2>
+              <p className="text-xs opacity-60 mt-1">
+                All gold transactions history
+              </p>
+            </div>
 
             <button
               onClick={exportPDF}
-              className="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-lg"
+              className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition"
             >
               Export PDF
             </button>
           </div>
 
+          {/* TABLE */}
           {loading ? (
-            <div className="text-center py-10 text-lg">Loading records...</div>
+            <p className="py-8 text-center opacity-70">Loading...</p>
           ) : filteredRecords.length === 0 ? (
-            <div className="text-center py-10 text-gray-500 text-lg">
-              No records found
-            </div>
+            <p className="py-8 text-center opacity-60">No records found</p>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full border-collapse">
+              <table className="w-full text-sm border-collapse">
                 <thead>
-                  <tr className="bg-yellow-600 text-white">
-                    <th className="p-4 text-left">Date</th>
-                    <th className="p-4 text-left">Karat</th>
-                    <th className="p-4 text-left">Input Weight</th>
-                    <th className="p-4 text-left">Output Weight</th>
-
-                    {/* ✅ ADDED */}
-                    <th className="p-4 text-left">Less Weight</th>
-
-                    <th className="p-4 text-left">Actions</th>
+                  <tr className="border-b border-gray-700 text-left text-[#d4af37]">
+                    <th className="p-3">Date</th>
+                    <th className="p-3">Karat</th>
+                    <th className="p-3">Input</th>
+                    <th className="p-3">Output</th>
+                    <th className="p-3">Loss</th>
+                    <th className="p-3">Action</th>
                   </tr>
                 </thead>
 
                 <tbody>
-                  {filteredRecords.map((record) => (
-                    <tr key={record.id} className="border-b hover:bg-gray-100">
-                      <td className="p-4">{record.date}</td>
-                      <td className="p-4 font-semibold">{record.karatType}</td>
-                      <td className="p-4">{record.inputWeight}</td>
-                      <td className="p-4">{record.outputWeight}</td>
+                  {filteredRecords.map((r) => (
+                    <tr
+                      key={r.id}
+                      className="border-b border-gray-800 hover:bg-[#0b1220] transition"
+                    >
+                      <td className="p-3">{r.date}</td>
+                      <td className="p-3 text-[#d4af37] font-medium">
+                        {r.karatType}
+                      </td>
+                      <td className="p-3">{r.inputWeight}</td>
+                      <td className="p-3">{r.outputWeight}</td>
 
-                      {/* ✅ ADDED */}
-                      <td className="p-4 font-bold text-red-600">
+                      <td className="p-3 text-red-400 font-bold">
                         {calculateDifference(
-                          record.inputWeight,
-                          record.outputWeight,
+                          r.inputWeight,
+                          r.outputWeight,
                         ).toFixed(3)}
                       </td>
 
-                      <td className="p-4">
+                      <td className="p-3">
                         <button
-                          onClick={() => deleteRecord(record.id)}
-                          className="bg-red-600 hover:bg-red-700 text-white p-3 rounded-lg"
+                          onClick={() => deleteRecord(r.id)}
+                          className="text-red-500 hover:text-red-400"
                         >
                           <FaTrash />
                         </button>
