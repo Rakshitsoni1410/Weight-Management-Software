@@ -1,4 +1,5 @@
 package com.weight.weight_management.entity;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -6,11 +7,15 @@ import jakarta.persistence.Id;
 
 @Entity
 public class WeightRecord {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String date;
+
+    // Gold Karat Type
+    private String karatType;
 
     private Double inputWeight;
 
@@ -33,6 +38,14 @@ public class WeightRecord {
 
     public void setDate(String date) {
         this.date = date;
+    }
+
+    public String getKaratType() {
+        return karatType;
+    }
+
+    public void setKaratType(String karatType) {
+        this.karatType = karatType;
     }
 
     public Double getInputWeight() {
