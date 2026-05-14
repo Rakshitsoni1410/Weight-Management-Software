@@ -1,11 +1,9 @@
 package com.weight.weight_management.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 @Entity
+@Table(name = "weight_records")
 public class WeightRecord {
 
     @Id
@@ -14,15 +12,29 @@ public class WeightRecord {
 
     private String date;
 
-    // Gold Karat Type
     private String karatType;
 
     private Double inputWeight;
 
     private Double outputWeight;
 
+    // ✅ Optional (recommended): store calculated field in DB too
+    private Double differenceWeight;
+
     public WeightRecord() {
     }
+
+    // 🔥 AUTO CALCULATE BEFORE SAVE
+    @PrePersist
+    @PreUpdate
+    public void calculateDifference() {
+        if (inputWeight == null) inputWeight = 0.0;
+        if (outputWeight == null) outputWeight = 0.0;
+
+        this.differenceWeight = inputWeight - outputWeight;
+    }
+
+    // GETTERS & SETTERS
 
     public Long getId() {
         return id;
@@ -62,5 +74,13 @@ public class WeightRecord {
 
     public void setOutputWeight(Double outputWeight) {
         this.outputWeight = outputWeight;
+    }
+
+    public Double getDifferenceWeight() {
+        return differenceWeight;
+    }
+
+    public void setDifferenceWeight(Double differenceWeight) {
+        this.differenceWeight = differenceWeight;
     }
 }
