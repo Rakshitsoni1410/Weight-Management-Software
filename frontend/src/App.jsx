@@ -284,15 +284,20 @@ function App() {
                 {filteredRecords.map((r) => (
                   <tr key={r.id} className="border-b">
                     <td className="py-3 px-4">{formatDate(r.date)}</td>
-                    <td className="py-3 px-4">{format3(r.karatType)}</td>
+
+                    <td className="py-3 px-4">{r.karatType}</td>
+
                     <td className="py-3 px-4">{format3(r.inputWeight)}</td>
+
                     <td className="py-3 px-4">{format3(r.outputWeight)}</td>
+
                     <td className="py-3 px-4 text-red-500 font-bold">
                       {calculateDifference(
                         r.inputWeight,
                         r.outputWeight,
                       ).toFixed(3)}
                     </td>
+
                     <td className="py-3 px-4 text-center">
                       <button onClick={() => deleteRecord(r.id)}>
                         <FaTrash className="text-red-500" />
