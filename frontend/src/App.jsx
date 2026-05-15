@@ -272,7 +272,7 @@ function App() {
               >
                 <tr>
                   <th className="py-3 px-4 text-left">Date</th>
-                  <th className="py-3 px-4 text-left">Karat</th>
+                  <th className="py-3 px-4 text-left">Carat</th>
                   <th className="py-3 px-4 text-left">Input</th>
                   <th className="py-3 px-4 text-left">Output</th>
                   <th className="py-3 px-4 text-left">Loss</th>
