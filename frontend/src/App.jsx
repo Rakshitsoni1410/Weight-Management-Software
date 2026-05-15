@@ -22,8 +22,11 @@ function App() {
   const [outputWeight, setOutputWeight] = useState("");
 
   const [selectedKarat, setSelectedKarat] = useState("ALL");
+
   const [loading, setLoading] = useState(false);
-  const [darkMode, setDarkMode] = useState(true);
+
+  // LIGHT MODE DEFAULT
+  const [darkMode, setDarkMode] = useState(false);
 
   const BRAND_NAME = "Gold Management System - Rakshit R Soni";
   const EMAIL = "rakshitrsoni@gmail.com";
@@ -41,19 +44,26 @@ function App() {
 
   useEffect(() => {
     const saved = localStorage.getItem("theme");
-    if (saved) setDarkMode(saved === "dark");
+
+    if (saved) {
+      setDarkMode(saved === "dark");
+    }
   }, []);
 
   const toggleTheme = () => {
     const newMode = !darkMode;
+
     setDarkMode(newMode);
+
     localStorage.setItem("theme", newMode ? "dark" : "light");
   };
 
   const fetchRecords = async () => {
     try {
       setLoading(true);
+
       const res = await axios.get(API);
+
       setRecords(res.data || []);
     } catch {
       toast.error("Failed to load records");
@@ -70,7 +80,9 @@ function App() {
     if (selectedKarat === "ALL") {
       setFilteredRecords(records);
     } else {
-      setFilteredRecords(records.filter((r) => r.karatType === selectedKarat));
+      setFilteredRecords(
+        records.filter((r) => r.karatType === selectedKarat),
+      );
     }
   }, [records, selectedKarat]);
 
@@ -117,7 +129,9 @@ function App() {
 
     try {
       await axios.delete(`${API}/${id}`);
+
       toast.success("Deleted");
+
       fetchRecords();
     } catch {
       toast.error("Delete failed");
@@ -137,7 +151,9 @@ function App() {
 
     autoTable(doc, {
       startY: 45,
+
       head: [["Date", "Karat", "Input", "Output", "Loss"]],
+
       body: filteredRecords.map((r) => [
         formatDate(r.date),
         r.karatType,
@@ -145,6 +161,7 @@ function App() {
         r.outputWeight,
         calculateDifference(r.inputWeight, r.outputWeight).toFixed(3),
       ]),
+
       foot: [
         [
           "TOTAL",
@@ -156,7 +173,6 @@ function App() {
       ],
     });
 
-    // ✅ CLEAN BRAND FOOTER (NO WATERMARK)
     const pageHeight = doc.internal.pageSize.height;
 
     doc.setFontSize(9);
@@ -167,42 +183,51 @@ function App() {
     doc.text(`Contact: ${EMAIL}`, 14, pageHeight - 5);
 
     doc.save("gold-records.pdf");
+
     toast.success("PDF Exported");
   };
 
-  const bg = darkMode ? "bg-[#0b1220] text-white" : "bg-gray-100 text-black";
+  // THEMES
+
+  const bg = darkMode
+    ? "bg-slate-900 text-white"
+    : "bg-[#f8fafc] text-slate-800";
 
   const card = darkMode
-    ? "bg-[#111c33] border-gray-800"
-    : "bg-white border-gray-200";
+    ? "bg-slate-800 border-slate-700"
+    : "bg-white border-slate-200 shadow-sm";
 
   const inputStyle =
-    "w-full p-3 rounded-lg border focus:outline-none " +
+    "w-full p-3 rounded-xl border transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-amber-400 " +
     (darkMode
-      ? "bg-[#0b1220] border-gray-700 text-white"
-      : "bg-white border-gray-300 text-black");
+      ? "bg-slate-900 border-slate-700 text-white"
+      : "bg-white border-slate-300 text-slate-800");
 
   return (
-    <div className={`min-h-screen p-6 space-y-6 ${bg}`}>
+    <div className={`min-h-screen p-3 md:p-6 space-y-6 ${bg}`}>
       <ToastContainer />
 
       {/* HEADER */}
-      <div className={`${card} border rounded-2xl p-6 flex justify-between`}>
-        <h1 className="text-xl font-bold text-[#d4af37]">
+
+      <div
+        className={`${card} border rounded-3xl p-4 md:p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4`}
+      >
+        <h1 className="text-2xl md:text-3xl font-bold text-amber-500 text-center md:text-left">
           Machinecut Hisab System
         </h1>
 
         <button
           onClick={toggleTheme}
-          className="bg-[#d4af37] text-black px-4 py-2 rounded-xl"
+          className="bg-amber-400 hover:bg-amber-500 transition-all text-black px-5 py-2 rounded-xl font-semibold w-full md:w-auto"
         >
           {darkMode ? "Light ☀️" : "Dark 🌙"}
         </button>
       </div>
 
       {/* FORM */}
-      <div className={`${card} border rounded-2xl p-6`}>
-        <div className="grid md:grid-cols-5 gap-4 items-end">
+
+      <div className={`${card} border rounded-3xl p-4 md:p-6`}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
           <input
             type="date"
             value={date}
@@ -238,69 +263,129 @@ function App() {
 
           <button
             onClick={addRecord}
-            className="bg-[#d4af37] text-black px-6 py-3 rounded-xl font-semibold h-[48px]"
+            className="bg-amber-400 hover:bg-amber-500 transition-all text-black px-6 py-3 rounded-xl font-semibold"
           >
-            Save
+            Save Record
           </button>
         </div>
       </div>
 
       {/* TABLE */}
-      <div className={`${card} border rounded-2xl p-6`}>
-        <div className="flex justify-between mb-4">
-          <h2 className="text-[#d4af37] font-semibold">Records</h2>
 
-          <button
-            onClick={exportPDF}
-            className="bg-red-600 px-4 py-2 rounded-lg"
-          >
-            Export PDF
-          </button>
+      <div className={`${card} border rounded-3xl p-4 md:p-6`}>
+        <div className="flex flex-col md:flex-row gap-4 justify-between md:items-center mb-4">
+          <h2 className="text-amber-500 text-xl font-bold">
+            Records
+          </h2>
+
+          <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+            <select
+              value={selectedKarat}
+              onChange={(e) => setSelectedKarat(e.target.value)}
+              className={inputStyle}
+            >
+              <option value="ALL">All</option>
+              <option value="75">75</option>
+              <option value="84">84</option>
+              <option value="92">92</option>
+            </select>
+
+            <button
+              onClick={exportPDF}
+              className="bg-red-500 hover:bg-red-600 transition-all text-white px-4 py-2 rounded-xl"
+            >
+              Export PDF
+            </button>
+          </div>
+        </div>
+
+        {/* SUMMARY */}
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+          <div className="bg-amber-100 rounded-2xl p-4">
+            <p className="text-sm text-slate-600">Total Input</p>
+            <h3 className="text-2xl font-bold text-amber-700">
+              {totalInput.toFixed(3)}
+            </h3>
+          </div>
+
+          <div className="bg-green-100 rounded-2xl p-4">
+            <p className="text-sm text-slate-600">Total Output</p>
+            <h3 className="text-2xl font-bold text-green-700">
+              {totalOutput.toFixed(3)}
+            </h3>
+          </div>
+
+          <div className="bg-red-100 rounded-2xl p-4">
+            <p className="text-sm text-slate-600">Total Loss</p>
+            <h3 className="text-2xl font-bold text-red-700">
+              {totalLoss.toFixed(3)}
+            </h3>
+          </div>
         </div>
 
         {loading ? (
-          <p className="text-center">Loading...</p>
+          <p className="text-center py-10">Loading...</p>
         ) : (
-          <div className="overflow-x-auto rounded-xl border border-gray-700">
-            <table className="w-full text-sm">
+          <div className="overflow-x-auto rounded-2xl border border-slate-200">
+            <table className="w-full min-w-[700px] text-sm">
               <thead
                 className={
                   darkMode
-                    ? "bg-[#0f172a] text-[#d4af37]"
-                    : "bg-gray-200 text-gray-800"
+                    ? "bg-slate-900 text-amber-400"
+                    : "bg-slate-100 text-slate-800"
                 }
               >
                 <tr>
-                  <th className="py-3 px-4 text-left">Date</th>
-                  <th className="py-3 px-4 text-left">Karat</th>
-                  <th className="py-3 px-4 text-left">Input</th>
-                  <th className="py-3 px-4 text-left">Output</th>
-                  <th className="py-3 px-4 text-left">Loss</th>
-                  <th className="py-3 px-4 text-center">Action</th>
+                  <th className="py-4 px-4 text-left">Date</th>
+
+                  <th className="py-4 px-4 text-left">Karat</th>
+
+                  <th className="py-4 px-4 text-left">Input</th>
+
+                  <th className="py-4 px-4 text-left">Output</th>
+
+                  <th className="py-4 px-4 text-left">Loss</th>
+
+                  <th className="py-4 px-4 text-center">Action</th>
                 </tr>
               </thead>
 
               <tbody>
                 {filteredRecords.map((r) => (
-                  <tr key={r.id} className="border-b">
-                    <td className="py-3 px-4">{formatDate(r.date)}</td>
+                  <tr
+                    key={r.id}
+                    className="border-b border-slate-200 hover:bg-slate-50 transition-all"
+                  >
+                    <td className="py-4 px-4">
+                      {formatDate(r.date)}
+                    </td>
 
-                    <td className="py-3 px-4">{r.karatType}</td>
+                    <td className="py-4 px-4 font-semibold">
+                      {r.karatType}
+                    </td>
 
-                    <td className="py-3 px-4">{format3(r.inputWeight)}</td>
+                    <td className="py-4 px-4">
+                      {format3(r.inputWeight)}
+                    </td>
 
-                    <td className="py-3 px-4">{format3(r.outputWeight)}</td>
+                    <td className="py-4 px-4">
+                      {format3(r.outputWeight)}
+                    </td>
 
-                    <td className="py-3 px-4 text-red-500 font-bold">
+                    <td className="py-4 px-4 text-red-500 font-bold">
                       {calculateDifference(
                         r.inputWeight,
                         r.outputWeight,
                       ).toFixed(3)}
                     </td>
 
-                    <td className="py-3 px-4 text-center">
-                      <button onClick={() => deleteRecord(r.id)}>
-                        <FaTrash className="text-red-500" />
+                    <td className="py-4 px-4 text-center">
+                      <button
+                        onClick={() => deleteRecord(r.id)}
+                        className="hover:scale-110 transition-all"
+                      >
+                        <FaTrash className="text-red-500 text-lg" />
                       </button>
                     </td>
                   </tr>
@@ -310,8 +395,9 @@ function App() {
           </div>
         )}
 
-        {/* FOOTER BRAND */}
-        <div className="text-center text-xs opacity-60 mt-4">
+        {/* FOOTER */}
+
+        <div className="text-center text-xs opacity-60 mt-6">
           © {BRAND_NAME} | {EMAIL}
         </div>
       </div>
