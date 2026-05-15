@@ -39,7 +39,10 @@ n.apache.org/xsd/maven-4.0.0.xsd">
             <artifactId>sqlite-jdbc</artifactId>
             <version>3.43.2.0</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+        </dependency>
         <!-- SQLite Dialect -->
         <dependency>
             <groupId>org.hibernate.orm</groupId>

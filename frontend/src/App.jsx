@@ -11,7 +11,7 @@ import autoTable from "jspdf-autotable";
 import logo from "./assets/logo.png";
 
 function App() {
-  const API = "http://localhost:8080/api/records";
+  const API = "https://weight-management-software.onrender.com/api/records";
 
   const [records, setRecords] = useState([]);
   const [filteredRecords, setFilteredRecords] = useState([]);
