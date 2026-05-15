@@ -1,6 +1,6 @@
 services:
 
-* type: web
+  type: web
   name: weight-management-backend
   env: java
   rootDir: backend/weight-management
