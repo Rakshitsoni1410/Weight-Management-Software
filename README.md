@@ -1,279 +1,152 @@
-# Weight Management Software
+# 💎 Gold Karat Management Software
 
-Professional offline local business management software built using React, Tailwind CSS, Spring Boot, JPA, and SQLite.
+Professional Gold Karat & Weight Management Software built using React, Tailwind CSS, Spring Boot, JPA, and SQLite.
 
----
-
-# Suggested Repository Names
-
-Choose any one:
-
-1. weight-management-software
-2. local-weight-management-system
-3. weight-management-dashboard
-4. offline-weight-management-app
-5. business-weight-manager
-6. weight-record-management-system
-7. smart-weight-management
-8. weight-management-desktop-software
-9. weight-management-crud-app
-10. local-business-weight-software
-
-Recommended:
-
-```bash
-weight-management-software
-```
+🌐 Live Demo: https://weight-management-software.netlify.app/
 
 ---
 
-# Project Overview
+# ✨ Features
 
-This project is a professional local business software designed to manage daily weight records on a local computer without internet.
+## 📦 Record Management
 
-The system allows users to:
-
-* Add weight records
-* Edit records
-* Delete records
-* View records in table format
-* Calculate totals
-* Export records to PDF
-* Export records to Excel
-* Run completely offline
+- Add Weight Records
+- Edit Records
+- Delete Records
+- View All Records
+- Karat-wise Filtering
+- Automatic Loss Calculation
+- 3 Decimal Precision Support
 
 ---
 
-# Tech Stack
+## 📊 Dashboard Features
+
+- Responsive Dashboard UI
+- Dark / Light Theme
+- Professional Table Design
+- Loading States
+- Empty State UI
+- Toast Notifications
+- Delete Confirmation Popup
+
+---
+
+## 📄 Export Features
+
+- Export Records to PDF
+- Business Branding in PDF
+- Professional Report Layout
+
+---
+
+## 🔒 Local Business Software
+
+Designed specially for:
+
+- Jewellery Shops
+- Gold Karat Businesses
+- Machinecut Operations
+- Local Weight Management
+
+Runs completely offline with local database support.
+
+---
+
+# 🛠️ Tech Stack
 
 ## Frontend
 
-* React
-* Tailwind CSS
-* Axios
-* React Toastify
+- React.js
+- Tailwind CSS
+- Axios
+- React Toastify
+- jsPDF
+- React Icons
 
 ## Backend
 
-* Spring Boot
-* Spring Data JPA
-* SQLite Database
+- Spring Boot
+- Spring Data JPA
+- SQLite Database
+- Maven
 
 ---
 
-# Features
-
-## Core Features
-
-* Add Record
-* Edit Record
-* Delete Record
-* Show All Records
-* Search Records
-* Filter Records
-* Daily Total Calculation
-* Responsive Dashboard
-* Loading States
-* Empty State UI
-* Toast Notifications
-* Delete Confirmation
-
-## Export Features
-
-* Export PDF
-* Export Excel
-
-## Future Ready Features
-
-* Authentication
-* Analytics Dashboard
-* Charts & Reports
-* Desktop EXE Conversion
-* Backup & Restore
-
----
-
-# Folder Structure
+# 📁 Project Structure
 
 ```bash
 WeightManagementSoftware/
 │
 ├── backend/
 │   └── weight-management/
-│       ├── src/
-│       │   ├── main/
-│       │   │   ├── java/
-│       │   │   │   └── com/
-│       │   │   │       └── weight/
-│       │   │   │           └── weight_management/
-│       │   │   │               ├── controller/
-│       │   │   │               ├── service/
-│       │   │   │               ├── repository/
-│       │   │   │               ├── entity/
-│       │   │   │               ├── config/
-│       │   │   │               └── WeightManagementApplication.java
-│       │   │   │
-│       │   │   └── resources/
-│       │   │       └── application.properties
-│       │   │
-│       │   └── test/
-│       │
-│       ├── pom.xml
-│       └── weight_management.db
 │
 └── frontend/
-    └── weight-management-ui/
-```
+🚀 Live Deployment
+Frontend
 
----
+Deployed on Netlify:
 
-# Backend Setup
+https://weight-management-software.netlify.app/
 
-## Step 1 — Open Backend Folder
+Backend
 
-```bash
+Deployed on Render.
+
+⚙️ Backend Setup
+Open Backend Folder
 cd backend/weight-management
-```
-
----
-
-## Step 2 — Run Spring Boot
-
-```bash
+Run Spring Boot
 ./mvnw.cmd spring-boot:run
-```
 
----
+Backend runs on:
 
-## Backend URL
-
-```bash
 http://localhost:8080
-```
-
----
-
-# API Endpoints
-
-## Get All Records
-
-```http
+⚛️ Frontend Setup
+Install Dependencies
+npm install
+Run Frontend
+npm run dev
+🔌 API Endpoints
+Get All Records
 GET /api/records
-```
-
-## Add Record
-
-```http
+Add Record
 POST /api/records
-```
-
-## Update Record
-
-```http
+Update Record
 PUT /api/records/{id}
-```
-
-## Delete Record
-
-```http
+Delete Record
 DELETE /api/records/{id}
-```
+🗄️ Database
 
----
-
-# SQLite Database
-
-SQLite runs automatically.
+SQLite Database is used.
 
 Database file:
 
-```bash
 weight_management.db
-```
 
 No MySQL or XAMPP required.
 
----
+📱 UI Highlights
+Modern Responsive Design
+Mobile Friendly Layout
+Gold Theme UI
+Professional Dashboard
+Business Branding
+Smooth User Experience
+🔮 Future Improvements
+Authentication System
+Analytics Dashboard
+Charts & Reports
+Backup & Restore
+Multi User Support
+Desktop EXE Version
+👨‍💻 Author
+Rakshit R Soni
 
-# Frontend Setup
+Professional Full Stack Developer
 
-## Create React App
+📧 Email: rakshitrsoni@gmail.com
 
-```bash
-npm create vite@latest
-```
+📜 License
 
-## Install Dependencies
-
-```bash
-npm install
-npm install axios react-toastify jspdf xlsx file-saver react-icons
-```
-
-## Run Frontend
-
-```bash
-npm run dev
-```
-
----
-
-# Axios Base URL
-
-```javascript
-http://localhost:8080/api
-```
-
----
-
-# Export Features
-
-## PDF Export
-
-Using:
-
-* jsPDF
-
-## Excel Export
-
-Using:
-
-* xlsx
-* file-saver
-
----
-
-# UI Features
-
-* Modern Dashboard Layout
-* Sidebar Navigation
-* Responsive Design
-* Professional Table UI
-* Toast Notifications
-* Search & Filter
-* Business Logo Header
-* Mobile Responsive Layout
-
----
-
-# Future Improvements
-
-* JWT Authentication
-* Admin Panel
-* Role Based Access
-* Charts & Analytics
-* Electron Desktop EXE
-* Cloud Backup
-* Multi User System
-
----
-
-# Author
-
-Developed for local business weight management and offline desktop operations.
-
----
-
-# License
-
-This project is free for learning and business use.
+This project is available for learning and business usage.
