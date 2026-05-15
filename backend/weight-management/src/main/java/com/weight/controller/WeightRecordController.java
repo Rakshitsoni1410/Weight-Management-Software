@@ -1,4 +1,5 @@
 package com.weight.weight_management.controller;
+
 import com.weight.weight_management.entity.WeightRecord;
 import com.weight.weight_management.service.WeightRecordService;
 import org.springframework.web.bind.annotation.*;
@@ -27,15 +28,18 @@ public class WeightRecordController {
     }
 
     @PutMapping("/{id}")
-    public WeightRecord updateRecord(
-            @PathVariable Long id,
-            @RequestBody WeightRecord record
-    ) {
+    public WeightRecord updateRecord(@PathVariable Long id, @RequestBody WeightRecord record) {
         return service.updateRecord(id, record);
     }
 
     @DeleteMapping("/{id}")
     public void deleteRecord(@PathVariable Long id) {
         service.deleteRecord(id);
+    }
+
+    // 🔥 TEST ENDPOINT (VERY IMPORTANT FOR DEBUG)
+    @GetMapping("/test")
+    public String test() {
+        return "API WORKING";
     }
 }
