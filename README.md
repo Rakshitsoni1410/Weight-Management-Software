@@ -1,4 +1,4 @@
-# 💎 Gold Karat Management Software
+# 💎 Gold Accouting  Management Software
 
 Professional Gold Karat & Weight Management Software built using React, Tailwind CSS, Spring Boot, JPA, and SQLite.
 
