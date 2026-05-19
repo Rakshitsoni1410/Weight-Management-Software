@@ -211,7 +211,7 @@ function App() {
       {/* HEADER */}
       <div className={`${card} border rounded-3xl p-4 flex justify-between`}>
         <h1 className="text-2xl font-bold text-amber-500">
-          Machinecut Hisab System
+          Machine cut Hisab System
         </h1>
 
         <button
