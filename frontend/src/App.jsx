@@ -309,7 +309,7 @@ function App() {
               <thead className="bg-slate-100 text-slate-700">
                 <tr>
                   <th className="py-3 px-4 text-left">Date</th>
-                  <th className="py-3 px-4 text-left">Karat</th>
+                  <th className="py-3 px-4 text-left">carat</th>
                   <th className="py-3 px-4 text-left">Input</th>
                   <th className="py-3 px-4 text-left">Output</th>
                   <th className="py-3 px-4 text-left">Ghat</th>
