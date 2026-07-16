@@ -271,41 +271,48 @@ function App() {
     }
   };
 
-  const exportPDF = () => {
-    const doc = new jsPDF();
-    doc.addImage(logo, "PNG", 14, 10, 30, 30);
-    doc.setFontSize(18);
-    doc.text("Gold Carat Management Report", 50, 20);
-    doc.setFontSize(10);
-    doc.text(`Generated: ${new Date().toLocaleString()}`, 50, 30);
-    autoTable(doc, {
-      startY: 45,
-      head: [["Date", "Karat", "Input", "Output", "Ghat"]],
-      body: filteredRecords.map((r) => [
-        formatDate(r.date),
-        r.karatType,
-        r.inputWeight,
-        r.outputWeight,
-        calcDiff(r.inputWeight, r.outputWeight).toFixed(3),
-      ]),
-      foot: [
-        [
-          "TOTAL",
-          "",
-          totalInput.toFixed(3),
-          totalOutput.toFixed(3),
-          totalLoss.toFixed(3),
-        ],
+ const exportPDF = () => {
+  const doc = new jsPDF();
+  doc.addImage(logo, "PNG", 14, 10, 30, 30);
+
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(16);
+  doc.setTextColor(0, 0, 0); // dark/black
+  doc.text("Gold Carat Management Report", 50, 20);
+
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(10);
+  doc.setTextColor(80, 80, 80);
+  doc.text(`Generated: ${new Date().toLocaleString()}`, 50, 30);
+
+  autoTable(doc, {
+    startY: 45,
+    head: [["Date", "Karat", "Input", "Output", "Ghat"]],
+    body: filteredRecords.map((r) => [
+      formatDate(r.date),
+      r.karatType,
+      r.inputWeight,
+      r.outputWeight,
+      calcDiff(r.inputWeight, r.outputWeight).toFixed(3),
+    ]),
+    foot: [
+      [
+        "TOTAL",
+        "",
+        totalInput.toFixed(3),
+        totalOutput.toFixed(3),
+        totalLoss.toFixed(3),
       ],
-    });
-    const ph = doc.internal.pageSize.height;
-    doc.setFontSize(9);
-    doc.setTextColor(120);
-    doc.text(`© ${BRAND_NAME}`, 14, ph - 10);
-    doc.text(`Contact: ${EMAIL}`, 14, ph - 5);
-    doc.save("gold-records.pdf");
-    toast.success("PDF Exported");
-  };
+    ],
+  });
+  const ph = doc.internal.pageSize.height;
+  doc.setFontSize(9);
+  doc.setTextColor(120);
+  doc.text(`© ${BRAND_NAME}`, 14, ph - 10);
+  doc.text(`Contact: ${EMAIL}`, 14, ph - 5);
+  doc.save("gold-records.pdf");
+  toast.success("PDF Exported");
+};
 
   /* styles */
   const bg = darkMode
