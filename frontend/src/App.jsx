@@ -271,13 +271,13 @@ function App() {
     }
   };
 
- const exportPDF = () => {
+const exportPDF = () => {
   const doc = new jsPDF();
   doc.addImage(logo, "PNG", 14, 10, 30, 30);
 
   doc.setFont("helvetica", "bold");
   doc.setFontSize(16);
-  doc.setTextColor(0, 0, 0); // dark/black
+  doc.setTextColor(0, 0, 0);
   doc.text("Gold Carat Management Report", 50, 20);
 
   doc.setFont("helvetica", "normal");
@@ -304,7 +304,29 @@ function App() {
         totalLoss.toFixed(3),
       ],
     ],
+    styles: {
+      fontSize: 12,
+      textColor: [0, 0, 0],      // dark/black body text
+      cellPadding: 4,
+      valign: "middle",
+    },
+    headStyles: {
+      fontSize: 12,
+      fontStyle: "bold",
+      textColor: [255, 255, 255],
+      fillColor: [41, 128, 185],
+    },
+    footStyles: {
+      fontSize: 12,
+      fontStyle: "bold",
+      textColor: [255, 255, 255],
+      fillColor: [41, 128, 185],
+    },
+    alternateRowStyles: {
+      fillColor: [245, 245, 245],
+    },
   });
+
   const ph = doc.internal.pageSize.height;
   doc.setFontSize(9);
   doc.setTextColor(120);
